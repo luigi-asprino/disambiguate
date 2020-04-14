@@ -16,56 +16,54 @@ class Predicter(object):
         self.beam_size: int = int()
         self.output_all_features: bool = bool()
         self.data_config: DataConfig = None
-
-    def predict(self):
-        config_file_path = self.training_root_path + "/config.json"
+        self.config_file_path = self.training_root_path + "/config.json"
         self.data_config = DataConfig()
         self.data_config.load_from_file(config_file_path)
-        config = ModelConfig(self.data_config)
-        config.load_from_file(config_file_path)
+        self.config = ModelConfig(self.data_config)
+        self.config.load_from_file(config_file_path)
         if self.clear_text:
-            config.data_config.input_clear_text = [True for _ in range(config.data_config.input_features)]
+            self.config.data_config.input_clear_text = [True for _ in range(config.data_config.input_features)]
         if self.data_config.output_features <= 0:
             self.disambiguate = False
         if self.data_config.output_translations <= 0:
             self.translate = False
-
         assert(self.disambiguate or self.translate)
+        self.ensemble = self.create_ensemble(config, self.ensemble_weights_path)
 
-        ensemble = self.create_ensemble(config, self.ensemble_weights_path)
-
+        
+    
+    def predict(self, line):
         i = 0
         batch_x = None
         batch_z = None
-        for line in sys.stdin:
-            print("new line "+line)
-            if i == 0:
-                sample_x = read_sample_x_from_string(line, feature_count=config.data_config.input_features, clear_text=config.data_config.input_clear_text)
-                self.preprocess_sample_x(ensemble, sample_x)
-                if batch_x is None:
-                    batch_x = [[] for _ in range(len(sample_x))]
-                for j in range(len(sample_x)):
-                    batch_x[j].append(sample_x[j])
-                if self.disambiguate and not self.output_all_features:
-                    i = 1
-                else:
-                    if len(batch_x[0]) >= self.batch_size:
-                        self.predict_and_output(ensemble, batch_x, batch_z, self.data_config.input_clear_text)
-                        batch_x = None
-            elif i == 1:
-                sample_z = read_sample_z_from_string(line, feature_count=config.data_config.output_features)
-                if batch_z is None:
-                    batch_z = [[] for _ in range(len(sample_z))]
-                for j in range(len(sample_z)):
-                    batch_z[j].append(sample_z[j])
-                i = 0
-                if len(batch_z[0]) >= self.batch_size:
-                    self.predict_and_output(ensemble, batch_x, batch_z, self.data_config.input_clear_text)
-                    batch_x = None
-                    batch_z = None
+        print(line)
+        if i == 0:
+            sample_x = read_sample_x_from_string(line, feature_count=config.data_config.input_features, clear_text=config.data_config.input_clear_text)
+            self.preprocess_sample_x(ensemble, sample_x)
+            if batch_x is None:
+                batch_x = [[] for _ in range(len(sample_x))]
+            for j in range(len(sample_x)):
+                batch_x[j].append(sample_x[j])
+            if self.disambiguate and not self.output_all_features:
+                i = 1
+            else:
+                if len(batch_x[0]) >= self.batch_size:
+                    return self.predict_and_output(ensemble, batch_x, batch_z, self.data_config.input_clear_text)
+                    #batch_x = None
+        elif i == 1:
+            sample_z = read_sample_z_from_string(line, feature_count=config.data_config.output_features)
+            if batch_z is None:
+                batch_z = [[] for _ in range(len(sample_z))]
+            for j in range(len(sample_z)):
+                batch_z[j].append(sample_z[j])
+            i = 0
+            if len(batch_z[0]) >= self.batch_size:
+                return self.predict_and_output(ensemble, batch_x, batch_z, self.data_config.input_clear_text)
+                batch_x = None
+                batch_z = None
 
         if batch_x is not None:
-            self.predict_and_output(ensemble, batch_x, batch_z, self.data_config.input_clear_text)
+            return self.predict_and_output(ensemble, batch_x, batch_z, self.data_config.input_clear_text)
 
     def create_ensemble(self, config: ModelConfig, ensemble_weights_paths: List[str]):
         ensemble = [Model(config) for _ in range(len(ensemble_weights_paths))]
@@ -85,10 +83,12 @@ class Predicter(object):
         if self.disambiguate and not self.translate and self.output_all_features:
             output_all_features = Predicter.predict_ensemble_all_features_on_batch(ensemble, batch_x)
             batch_all_features = Predicter.generate_all_features_on_batch(output_all_features, batch_x)
+            result = []
             for sample_all_features in batch_all_features:
-                sys.stdout.write(sample_all_features + "\n")
-            sys.stdout.flush()
-            return
+                #sys.stdout.write(sample_all_features + "\n")
+                result.append(sample_all_features)
+            #sys.stdout.flush()
+            return result
         if self.disambiguate and not self.translate:
             output_wsd = Predicter.predict_ensemble_wsd_on_batch(ensemble, batch_x)
         elif self.translate and not self.disambiguate:
@@ -97,20 +97,30 @@ class Predicter(object):
             output_wsd, output_translation = Predicter.predict_ensemble_wsd_and_translation_on_batch(ensemble, batch_x)
         if output_wsd is not None and output_translation is None:
             batch_wsd = Predicter.generate_wsd_on_batch(output_wsd, batch_z)
+            result = []
             for sample_wsd in batch_wsd:
-                sys.stdout.write(sample_wsd + "\n")
+                #sys.stdout.write(sample_wsd + "\n")
+                result.append(sample_wsd)
+            return result
         elif output_translation is not None and output_wsd is None:
             batch_translation = Predicter.generate_translation_on_batch(output_translation, ensemble[0].config.data_config.output_translation_vocabularies[0][0])
+            result = []
             for sample_translation in batch_translation:
-                sys.stdout.write(sample_translation + "\n")
+                #sys.stdout.write(sample_translation + "\n")
+                result.append(sample_translation)
+            return result
         elif output_wsd is not None and output_translation is not None:
             batch_wsd = Predicter.generate_wsd_on_batch(output_wsd, batch_z)
             batch_translation = Predicter.generate_translation_on_batch(output_translation, ensemble[0].config.data_config.output_translation_vocabularies[0][0])
             assert len(batch_wsd) == len(batch_translation)
+            result = []
             for i in range(len(batch_wsd)):
-                sys.stdout.write(batch_wsd[i] + "\n")
-                sys.stdout.write(batch_translation[i] + "\n")
-        sys.stdout.flush()
+                #sys.stdout.write(batch_wsd[i] + "\n")
+                #sys.stdout.write(batch_translation[i] + "\n")
+                result.append(batch_wsd[i])
+                result.append(batch_translation[i])
+            return result
+        #sys.stdout.flush()
 
     @staticmethod
     def predict_ensemble_wsd_on_batch(ensemble: List[Model], batch_x):
