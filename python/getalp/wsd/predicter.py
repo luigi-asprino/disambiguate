@@ -39,7 +39,7 @@ class Predicter(object):
         batch_x = None
         batch_z = None
         for line in sys.stdin:
-            f.write(line)
+            self.file.write(line)
             if i == 0:
                 sample_x = read_sample_x_from_string(line, feature_count=config.data_config.input_features, clear_text=config.data_config.input_clear_text)
                 self.preprocess_sample_x(ensemble, sample_x)
