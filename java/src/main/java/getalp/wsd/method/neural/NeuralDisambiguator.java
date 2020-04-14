@@ -165,7 +165,9 @@ public class NeuralDisambiguator extends DisambiguatorContextSentenceBatch imple
         pb.redirectError(ProcessBuilder.Redirect.INHERIT);
         pythonProcess = pb.start();
         pythonProcessReader = new BufferedReader(new InputStreamReader(pythonProcess.getInputStream()));
+        System.out.println("Is process reader null? "+(pythonProcessReader==null));
         pythonProcessWriter = new BufferedWriter(new OutputStreamWriter(pythonProcess.getOutputStream()));
+        System.out.println("Is process writer null? "+(pythonProcessReader==null));
     }
 
     @SuppressWarnings("unchecked")
