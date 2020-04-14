@@ -160,6 +160,8 @@ public class NeuralDisambiguator extends DisambiguatorContextSentenceBatch imple
         args.addAll(Arrays.asList("--beam_size", "" + beamSize));
         if (extraLemma) args.add("--output_all_features");
         ProcessBuilder pb = new ProcessBuilder(args);
+        // TRACE
+        System.out.println(pb.toString());
         pb.redirectError(ProcessBuilder.Redirect.INHERIT);
         pythonProcess = pb.start();
         pythonProcessReader = new BufferedReader(new InputStreamReader(pythonProcess.getInputStream()));
