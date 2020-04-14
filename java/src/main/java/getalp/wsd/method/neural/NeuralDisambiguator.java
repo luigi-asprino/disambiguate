@@ -357,7 +357,6 @@ public class NeuralDisambiguator extends DisambiguatorContextSentenceBatch imple
                 String line = pythonProcessReader.readLine();
                 if (line==null || line.startsWith("Better speed can be achieved with apex installed"))
                 {
-                	System.out.println("Is processReader null? "+(pythonProcessReader==null));
                     i--;
                     continue;
                 }
