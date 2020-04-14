@@ -16,6 +16,7 @@ class Predicter(object):
         self.beam_size: int = int()
         self.output_all_features: bool = bool()
         self.data_config: DataConfig = None
+        self.file = open("/tf/lines","w") 
 
     def predict(self):
         config_file_path = self.training_root_path + "/config.json"
@@ -38,7 +39,7 @@ class Predicter(object):
         batch_x = None
         batch_z = None
         for line in sys.stdin:
-            print("new line "+line)
+            f.write(line)
             if i == 0:
                 sample_x = read_sample_x_from_string(line, feature_count=config.data_config.input_features, clear_text=config.data_config.input_clear_text)
                 self.preprocess_sample_x(ensemble, sample_x)
