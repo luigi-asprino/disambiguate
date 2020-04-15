@@ -61,8 +61,8 @@ class Predicter(object):
                     batch_x = None
                     batch_z = None
     
-            if batch_x is not None:
-                out.append(self.predict_and_output(self.ensemble, batch_x, batch_z, self.data_config.input_clear_text))
+        if batch_x is not None:
+            out.append(self.predict_and_output(self.ensemble, batch_x, batch_z, self.data_config.input_clear_text))
         return out
 
     def create_ensemble(self, config: ModelConfig, ensemble_weights_paths: List[str]):
