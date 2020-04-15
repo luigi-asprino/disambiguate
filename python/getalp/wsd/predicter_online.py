@@ -18,9 +18,9 @@ class Predicter(object):
         self.data_config: DataConfig = None
         self.config_file_path = self.training_root_path + "/config.json"
         self.data_config = DataConfig()
-        self.data_config.load_from_file(config_file_path)
+        self.data_config.load_from_file(self.config_file_path)
         self.config = ModelConfig(self.data_config)
-        self.config.load_from_file(config_file_path)
+        self.config.load_from_file(self.config_file_path)
         if self.clear_text:
             self.config.data_config.input_clear_text = [True for _ in range(config.data_config.input_features)]
         if self.data_config.output_features <= 0:
