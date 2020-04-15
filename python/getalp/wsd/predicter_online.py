@@ -16,6 +16,7 @@ class Predicter(object):
         self.beam_size: int = int()
         self.output_all_features: bool = bool()
         self.data_config: DataConfig = None
+        print(self.training_root_path)
         self.config_file_path = self.training_root_path + "/config.json"
         self.data_config = DataConfig()
         self.data_config.load_from_file(self.config_file_path)
