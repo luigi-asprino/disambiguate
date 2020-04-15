@@ -48,7 +48,7 @@ class Predicter(object):
                 else:
                     if len(batch_x[0]) >= self.batch_size:
                         out.append(self.predict_and_output(self.ensemble, batch_x, batch_z, self.data_config.input_clear_text))
-                        # batch_x = None
+                        batch_x = None
             elif i == 1:
                 sample_z = read_sample_z_from_string(line, feature_count=self.config.data_config.output_features)
                 if batch_z is None:
