@@ -22,7 +22,7 @@ class Predicter(object):
         self.config = ModelConfig(self.data_config)
         self.config.load_from_file(self.config_file_path)
         if self.clear_text:
-            self.config.data_config.input_clear_text = [True for _ in range(config.data_config.input_features)]
+            self.config.data_config.input_clear_text = [True for _ in range(self.config.data_config.input_features)]
         if self.data_config.output_features <= 0:
             self.disambiguate = False
         if self.data_config.output_translations <= 0:
