@@ -37,7 +37,7 @@ class Predicter(object):
         for line in lines:
             if i == 0:
                 sample_x = read_sample_x_from_string(line, feature_count=self.config.data_config.input_features, clear_text=self.config.data_config.input_clear_text)
-                self.preprocess_sample_x(ensemble, sample_x)
+                self.preprocess_sample_x(self.ensemble, sample_x)
                 if batch_x is None:
                     batch_x = [[] for _ in range(len(sample_x))]
                 for j in range(len(sample_x)):
@@ -46,7 +46,7 @@ class Predicter(object):
                     i = 1
                 else:
                     if len(batch_x[0]) >= self.batch_size:
-                        return self.predict_and_output(ensemble, batch_x, batch_z, self.data_config.input_clear_text)
+                        return self.predict_and_output(self.ensemble, batch_x, batch_z, self.data_config.input_clear_text)
                         # batch_x = None
             elif i == 1:
                 sample_z = read_sample_z_from_string(line, feature_count=self.config.data_config.output_features)
@@ -56,12 +56,12 @@ class Predicter(object):
                     batch_z[j].append(sample_z[j])
                 i = 0
                 if len(batch_z[0]) >= self.batch_size:
-                    return self.predict_and_output(ensemble, batch_x, batch_z, self.data_config.input_clear_text)
+                    return self.predict_and_output(self.ensemble, batch_x, batch_z, self.data_config.input_clear_text)
                     batch_x = None
                     batch_z = None
     
             if batch_x is not None:
-                return self.predict_and_output(ensemble, batch_x, batch_z, self.data_config.input_clear_text)
+                return self.predict_and_output(self.ensemble, batch_x, batch_z, self.data_config.input_clear_text)
 
     def create_ensemble(self, config: ModelConfig, ensemble_weights_paths: List[str]):
         ensemble = [Model(config) for _ in range(len(ensemble_weights_paths))]
