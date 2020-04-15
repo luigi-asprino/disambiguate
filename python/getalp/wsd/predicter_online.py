@@ -28,7 +28,7 @@ class Predicter(object):
         if self.data_config.output_translations <= 0:
             self.translate = False
         assert(self.disambiguate or self.translate)
-        self.ensemble = self.create_ensemble(config, self.ensemble_weights_path)
+        self.ensemble = self.create_ensemble(self.config, self.ensemble_weights_path)
     
     def predict(self, lines):
         i = 0
