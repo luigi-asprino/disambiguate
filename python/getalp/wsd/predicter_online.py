@@ -36,7 +36,7 @@ class Predicter(object):
         batch_z = None
         for line in lines:
             if i == 0:
-                sample_x = read_sample_x_from_string(line, feature_count=config.data_config.input_features, clear_text=config.data_config.input_clear_text)
+                sample_x = read_sample_x_from_string(line, feature_count=self.config.data_config.input_features, clear_text=self.config.data_config.input_clear_text)
                 self.preprocess_sample_x(ensemble, sample_x)
                 if batch_x is None:
                     batch_x = [[] for _ in range(len(sample_x))]
@@ -49,7 +49,7 @@ class Predicter(object):
                         return self.predict_and_output(ensemble, batch_x, batch_z, self.data_config.input_clear_text)
                         # batch_x = None
             elif i == 1:
-                sample_z = read_sample_z_from_string(line, feature_count=config.data_config.output_features)
+                sample_z = read_sample_z_from_string(line, feature_count=self.config.data_config.output_features)
                 if batch_z is None:
                     batch_z = [[] for _ in range(len(sample_z))]
                 for j in range(len(sample_z)):
