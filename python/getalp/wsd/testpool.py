@@ -1,6 +1,10 @@
 from threading import Thread
 import time
 import concurrent.futures
+from getalp.wsd.predicter_online import Predicter
+import os
+import glob
+
 
 
 def predict(predicter, fin, outdir):
