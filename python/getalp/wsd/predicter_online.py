@@ -81,7 +81,7 @@ class Predicter(object):
             c = c + 1
             if(line[0] == '{'):
                 sink_file.write(bytes(line, "utf-8"))
-                sink_file.write(bytes('\n,', "utf-8"))
+                sink_file.write(bytes('\n', "utf-8"))
                 continue
             if i == 0:
                 sample_x = read_sample_x_from_string(line, feature_count=self.config.data_config.input_features, clear_text=self.config.data_config.input_clear_text)
@@ -95,7 +95,7 @@ class Predicter(object):
                 else:
                     if len(batch_x[0]) >= self.batch_size:
                         sink_file.write(bytes(self.predict_and_output(self.ensemble, batch_x, batch_z, self.data_config.input_clear_text), "utf-8"))
-                        sink_file.write(bytes('\n,', "utf-8"))
+                        sink_file.write(bytes('\n', "utf-8"))
                         batch_x = None
             elif i == 1:
                 sample_z = read_sample_z_from_string(line, feature_count=self.config.data_config.output_features)
@@ -106,12 +106,12 @@ class Predicter(object):
                 i = 0
                 if len(batch_z[0]) >= self.batch_size:
                     sink_file.write(bytes(self.predict_and_output(self.ensemble, batch_x, batch_z, self.data_config.input_clear_text), "utf-8"))
-                    sink_file.write(bytes('\n,', "utf-8"))
+                    sink_file.write(bytes('\n', "utf-8"))
                     batch_x = None
                     batch_z = None
         if batch_x is not None:
             sink_file.write(bytes(self.predict_and_output(self.ensemble, batch_x, batch_z, self.data_config.input_clear_text), "utf-8"))
-            sink_file.write(bytes('\n,', "utf-8"))
+            sink_file.write(bytes('\n', "utf-8"))
         source_file.close()
         sink_file.close()
 
