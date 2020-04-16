@@ -80,7 +80,7 @@ class Predicter(object):
             if(c % 100 == 0):
                 print("Processing line " + str(c))
             if(line[0] == '{'):
-                print("Skip "+c)
+                print("Skip "+str(c))
                 sink_file.write(line)
                 sink_file.write('\n')
             if i == 0:
