@@ -68,13 +68,17 @@ class Predicter(object):
     
     def predictFile(self, file_in, file_out):
         i = 0
+        c = 0
         batch_x = None
         batch_z = None
         source_file = bz2.BZ2File(file_in, "r")
         sink_file = bz2.BZ2File(file_out, "w")
         out = []
         for line in source_file:
-            if(line[0]=='{'):
+            c = c + 1
+            if(c % 100 == 0):
+                print("Processing line " + c)
+            if(line[0] == '{'):
                 sink_file.write(line)
                 sink_file.write('\n')
             if i == 0:
