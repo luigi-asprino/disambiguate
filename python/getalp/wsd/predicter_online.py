@@ -84,6 +84,7 @@ class Predicter(object):
                 print("Skip "+str(c))
                 sink_file.write(bytes(line,"utf-8"))
                 sink_file.write(bytes('\n,',"utf-8"))
+                continue
             if i == 0:
                 sample_x = read_sample_x_from_string(line, feature_count=self.config.data_config.input_features, clear_text=self.config.data_config.input_clear_text)
                 self.preprocess_sample_x(self.ensemble, sample_x)
