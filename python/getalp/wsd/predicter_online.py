@@ -72,11 +72,10 @@ class Predicter(object):
         c = 0
         batch_x = None
         batch_z = None
-        source_file = bz2.BZ2File(file_in, "r")
+        source_file = bz2.BZ2File(file_in, "rt")
         sink_file = bz2.BZ2File(file_out, "w")
         out = []
-        for line_binary in source_file:
-            line = line_binary.decode('utf-8')
+        for line in source_file:
             if(c % 100 == 0):
                 print("Processing line " + c)
             if(line[0] == '{'):
