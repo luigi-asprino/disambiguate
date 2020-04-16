@@ -81,8 +81,8 @@ class Predicter(object):
                 print("Processing line " + str(c))
             if(line[0] == '{'):
                 print("Skip "+str(c))
-                sink_file.write(line)
-                sink_file.write('\n')
+                sink_file.write(bytes(line,"utf-8"))
+                sink_file.write(bytes('\n,',"utf-8"))
             if i == 0:
                 sample_x = read_sample_x_from_string(line, feature_count=self.config.data_config.input_features, clear_text=self.config.data_config.input_clear_text)
                 self.preprocess_sample_x(self.ensemble, sample_x)
@@ -112,8 +112,8 @@ class Predicter(object):
         if batch_x is not None:
             out.append(self.predict_and_output(self.ensemble, batch_x, batch_z, self.data_config.input_clear_text))
         for line in out:
-            sink_file.write(line)
-            sink_file.write('\n')
+            sink_file.write(bytes(line,"utf-8"))
+            sink_file.write(bytes('\n,',"utf-8"))
         source_file.close()
         sink_file.close()
 
