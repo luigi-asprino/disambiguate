@@ -77,7 +77,6 @@ class Predicter(object):
         out = []
         for line_b in source_file:
             line = line_b.decode("utf-8").rstrip('\n')
-            print(line)
             if(c % 100 == 0):
                 print("Processing line " + str(c))
             if(line[0] == '{'):
