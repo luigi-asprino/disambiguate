@@ -75,14 +75,12 @@ class Predicter(object):
         source_file = bz2.BZ2File(file_in, "r")
         sink_file = bz2.BZ2File(file_out, "w")
         out = []
-        for line in source_file:
-            c = c + 1
+        for line_binary in source_file:
+            line = line_binary.decode('ascii')
             if(c % 100 == 0):
                 print("Processing line " + c)
-            print(line)
-            print(str(line)[0])
             if(line[0] == '{'):
-                print("Skip")
+                print("Skip "+c)
                 sink_file.write(line)
                 sink_file.write('\n')
             if i == 0:
@@ -110,6 +108,7 @@ class Predicter(object):
                     batch_x = None
                     batch_z = None
     
+            c = c + 1
         if batch_x is not None:
             out.append(self.predict_and_output(self.ensemble, batch_x, batch_z, self.data_config.input_clear_text))
         for line in out:
