@@ -76,7 +76,7 @@ class Predicter(object):
         sink_file = bz2.BZ2File(file_out, "w")
         for line_b in source_file:
             line = line_b.decode("utf-8").rstrip('\n')
-            if(c % 100 == 0):
+            if(c % 1000 == 0):
                 print("Processing line " + str(c))
             c = c + 1
             if(line[0] == '{'):
