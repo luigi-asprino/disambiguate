@@ -30,6 +30,7 @@ class Predicter(object):
             self.translate = False
         assert(self.disambiguate or self.translate)
         self.ensemble = self.create_ensemble(self.config, self.ensemble_weights_path)
+        print("Predicter initialized")
     
     def predict(self, lines):
         i = 0
