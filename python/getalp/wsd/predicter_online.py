@@ -74,15 +74,14 @@ class Predicter(object):
         batch_z = None
         source_file = bz2.BZ2File(file_in, "r")
         sink_file = bz2.BZ2File(file_out, "w")
-        out = []
         for line_b in source_file:
             line = line_b.decode("utf-8").rstrip('\n')
             if(c % 100 == 0):
                 print("Processing line " + str(c))
+            c = c + 1
             if(line[0] == '{'):
-                print("Skip "+str(c))
-                sink_file.write(bytes(line,"utf-8"))
-                sink_file.write(bytes('\n,',"utf-8"))
+                sink_file.write(bytes(line, "utf-8"))
+                sink_file.write(bytes('\n,', "utf-8"))
                 continue
             if i == 0:
                 sample_x = read_sample_x_from_string(line, feature_count=self.config.data_config.input_features, clear_text=self.config.data_config.input_clear_text)
@@ -95,7 +94,8 @@ class Predicter(object):
                     i = 1
                 else:
                     if len(batch_x[0]) >= self.batch_size:
-                        out.append(self.predict_and_output(self.ensemble, batch_x, batch_z, self.data_config.input_clear_text))
+                        sink_file.write(bytes(self.predict_and_output(self.ensemble, batch_x, batch_z, self.data_config.input_clear_text), "utf-8"))
+                        sink_file.write(bytes('\n,', "utf-8"))
                         batch_x = None
             elif i == 1:
                 sample_z = read_sample_z_from_string(line, feature_count=self.config.data_config.output_features)
@@ -105,16 +105,13 @@ class Predicter(object):
                     batch_z[j].append(sample_z[j])
                 i = 0
                 if len(batch_z[0]) >= self.batch_size:
-                    out.append(self.predict_and_output(self.ensemble, batch_x, batch_z, self.data_config.input_clear_text))
+                    sink_file.write(bytes(self.predict_and_output(self.ensemble, batch_x, batch_z, self.data_config.input_clear_text), "utf-8"))
+                    sink_file.write(bytes('\n,', "utf-8"))
                     batch_x = None
                     batch_z = None
-    
-            c = c + 1
         if batch_x is not None:
-            out.append(self.predict_and_output(self.ensemble, batch_x, batch_z, self.data_config.input_clear_text))
-        for line in out:
-            sink_file.write(bytes(line,"utf-8"))
-            sink_file.write(bytes('\n,',"utf-8"))
+            sink_file.write(bytes(self.predict_and_output(self.ensemble, batch_x, batch_z, self.data_config.input_clear_text), "utf-8"))
+            sink_file.write(bytes('\n,', "utf-8"))
         source_file.close()
         sink_file.close()
 
@@ -136,10 +133,11 @@ class Predicter(object):
         if self.disambiguate and not self.translate and self.output_all_features:
             output_all_features = Predicter.predict_ensemble_all_features_on_batch(ensemble, batch_x)
             batch_all_features = Predicter.generate_all_features_on_batch(output_all_features, batch_x)
-            result = []
+            result = ""
             for sample_all_features in batch_all_features:
                 # sys.stdout.write(sample_all_features + "\n")
-                result.append(sample_all_features)
+                # result.append(sample_all_features)
+                result = result + sample_all_features + "\n"
             # sys.stdout.flush()
             return result
         if self.disambiguate and not self.translate:
@@ -150,28 +148,33 @@ class Predicter(object):
             output_wsd, output_translation = Predicter.predict_ensemble_wsd_and_translation_on_batch(ensemble, batch_x)
         if output_wsd is not None and output_translation is None:
             batch_wsd = Predicter.generate_wsd_on_batch(output_wsd, batch_z)
-            result = []
+            result = ""
             for sample_wsd in batch_wsd:
                 # sys.stdout.write(sample_wsd + "\n")
-                result.append(sample_wsd)
+                # result.append(sample_wsd)
+                result = result + sample_wsd + "\n"
             return result
         elif output_translation is not None and output_wsd is None:
             batch_translation = Predicter.generate_translation_on_batch(output_translation, ensemble[0].config.data_config.output_translation_vocabularies[0][0])
-            result = []
+            result = ""
             for sample_translation in batch_translation:
                 # sys.stdout.write(sample_translation + "\n")
-                result.append(sample_translation)
+                # result.append(sample_translation)
+                result = result + sample_translation + "\n"
             return result
         elif output_wsd is not None and output_translation is not None:
             batch_wsd = Predicter.generate_wsd_on_batch(output_wsd, batch_z)
             batch_translation = Predicter.generate_translation_on_batch(output_translation, ensemble[0].config.data_config.output_translation_vocabularies[0][0])
             assert len(batch_wsd) == len(batch_translation)
-            result = []
+            # result = []
+            result = ""
             for i in range(len(batch_wsd)):
                 # sys.stdout.write(batch_wsd[i] + "\n")
                 # sys.stdout.write(batch_translation[i] + "\n")
-                result.append(batch_wsd[i])
-                result.append(batch_translation[i])
+                # result.append(batch_wsd[i])
+                # result.append(batch_translation[i])
+                result = result + batch_wsd[i] + "\n"
+                result = result + batch_translation[i] + "\n"
             return result
         # sys.stdout.flush()
 
