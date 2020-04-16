@@ -7,8 +7,11 @@ predicter = Predicter("/tf/model", ["/tf/model/model_weights_wsd0"], True, 1, Tr
 
 indir = "/tf/out/"
 outdir = "/tf/out_inference"
-os.mkdir(outdir)
-files = glob.glob('/Users/lgu/Desktop/**/*.bz2', recursive=True)
+if(not os.path.isdir(outdir)):
+    os.mkdir(outdir)
+    print("Out dir created")
+
+files = glob.glob(indir + '/**/*.bz2', recursive=True)
 
 t0 = time.time()
 print(t0)
@@ -20,5 +23,5 @@ for f in files:
     print("End " + f)
 t1 = time.time()
 print(t1)
-total = t1-t0
+total = t1 - t0
 print(total)
