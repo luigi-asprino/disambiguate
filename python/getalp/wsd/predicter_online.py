@@ -72,7 +72,7 @@ class Predicter(object):
         c = 0
         batch_x = None
         batch_z = None
-        source_file = bz2.BZ2File(file_in, "rt")
+        source_file = bz2.BZ2File(file_in, "r")
         sink_file = bz2.BZ2File(file_out, "w")
         out = []
         for line_b in source_file:
