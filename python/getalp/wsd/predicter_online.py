@@ -8,6 +8,7 @@ import bz2
 class Predicter(object):
 
     def __init__(self, training_root_path, ensemble_weights_path, clear_text, batch_size, disambiguate, beam_size, output_all_features):
+        print("Initialize Predicter")
         self.training_root_path: str = training_root_path
         self.ensemble_weights_path: List[str] = ensemble_weights_path
         self.clear_text: bool = clear_text
