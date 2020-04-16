@@ -16,10 +16,15 @@ files = glob.glob(indir + '/**/*.bz2', recursive=True)
 t0 = time.time()
 print(t0)
 for f in files:
+    outsubdir = outdir + "/" + os.path.basename(os.path.dirname(f)) 
+    if(not os.path.isdir(outsubdir)):
+        os.mkdir(outsubdir)
+        print("Out subdir created " + outsubdir)
+        
+    outfile = outsubdir + "/" + os.path.basename(f)
     print("Processing " + f)
-    outsubdir = outdir + "/" + os.path.basename(os.path.dirname(f))
-    os.mkdir(outsubdir)
-    predicter.predictFile(f, outsubdir + "/" + os.path.dirname(f))
+    print("Output " + outfile)
+    predicter.predictFile(f, outfile)
     print("End " + f)
 t1 = time.time()
 print(t1)
